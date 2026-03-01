@@ -15,7 +15,7 @@ const els = {
 // ===== Socket settings =====
 // If running locally: "http://localhost:3000"
 // If deployed later: "https://your-server.onrender.com"
-const SOCKET_URL = "http://localhost:3000";
+const SOCKET_URL = "https://ethics-xvau.onrender.com";
 
 // session + group identity (prompts)
 const sessionCode = prompt("Enter session code:", "1234") || "1234";
