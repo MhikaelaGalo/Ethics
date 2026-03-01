@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Choices Dashboard</title>
+  <style>
+    :root{
+      --bg:#0f1220;
+      --card:#161a2e;
+      --text:#e7e9ff;
+      --muted:#aab0e6;
+      --border: rgba(231,233,255,0.12);
+      --shadow: 0 12px 40px rgba(0,0,0,0.35);
+      --chip:#2a2f55;
+      --chipBorder: rgba(231,233,255,0.14);
+      --accent: rgba(59,130,246,0.25);
+      --accentBorder: rgba(59,130,246,0.40);
+      --ok: rgba(34,197,94,0.18);
+      --okBorder: rgba(34,197,94,0.30);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 600px at 20% 10%, #242a5a 0%, var(--bg) 55%);
+      color:var(--text);
+      min-height:100vh;
+      padding:24px;
+    }
+
+    .wrap{
+      width:min(1100px, 100%);
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    h1{
+      margin:0;
+      font-size:24px;
+      letter-spacing:0.2px;
+    }
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .topActions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(231,233,255,0.2);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .btn:hover{ border-color: rgba(231,233,255,0.45); }
+
+    .card{
+      background: rgba(22,26,46,0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1.2fr 2fr;
+      gap:14px;
+    }
+    @media (max-width: 900px){
+      .row{ grid-template-columns: 1fr; }
+    }
+
+    .metaLine{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      background:var(--accent);
+      border:1px solid var(--accentBorder);
+      color:#cfe5ff;
+      font-size:12px;
+      letter-spacing:0.4px;
+      font-weight:700;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: var(--chip);
+      border: 1px solid var(--chipBorder);
+      color: var(--text);
+      font-size:12px;
+    }
+    .chip b{ font-weight:800; }
+    code{
+      background: rgba(231,233,255,0.08);
+      border: 1px solid rgba(231,233,255,0.12);
+      padding: 2px 8px;
+      border-radius: 999px;
+      color:#cfe5ff;
+    }
+
+    .sectionTitle{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:0.2px;
+    }
+
+    .groupGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 650px){
+      .groupGrid{ grid-template-columns: 1fr; }
+    }
+
+    .groupCard{
+      border-radius:16px;
+      padding:12px;
+      border:1px solid rgba(231,233,255,0.12);
+      background: rgba(15,18,32,0.45);
+    }
+    .groupHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+    .groupName{
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+    .time{
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .kv{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      margin-top:6px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(231,233,255,0.06);
+      border: 1px solid rgba(231,233,255,0.12);
+      font-size:12px;
+      color: var(--text);
+      max-width: 100%;
+    }
+    .pill span{
+      color: var(--muted);
+      margin-right:6px;
+    }
+    .pill strong{
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 360px;
+      display:inline-block;
+      vertical-align:bottom;
+    }
+
+    .feed{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height: 520px;
+      overflow:auto;
+      padding-right: 6px;
+    }
+    .feedItem{
+      border-radius:16px;
+      padding:12px;
+      border:1px solid rgba(231,233,255,0.12);
+      background: rgba(15,18,32,0.45);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .feedTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      background: var(--ok);
+      border:1px solid var(--okBorder);
+      font-size:12px;
+      font-weight:800;
+    }
+    .empty{
+      color: var(--muted);
+      font-size: 13px;
+      padding: 10px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Live Choices Dashboard</h1>
+        <p class="sub">Shows picks in real time (same session code).</p>
+      </div>
+      <div class="topActions">
+        <button class="btn" id="clearFeedBtn">Clear feed</button>
+        <button class="btn" id="rejoinBtn">Change session</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="metaLine">
+        <span class="tag">SESSION</span>
+        <span class="chip"><b>Code:</b> <code id="sessionCodeLabel">----</code></span>
+        <span class="chip"><b>Status:</b> <span id="statusLabel">Connecting…</span></span>
+        <span class="chip"><b>Events:</b> <span id="eventCount">0</span></span>
+      </div>
+      <p class="sub" style="margin-top:10px;">Open this on the teacher/host device.</p>
+    </section>
+
+    <div class="row">
+      <section class="card">
+        <h2 class="sectionTitle">Latest per group</h2>
+        <div id="latestGrid" class="groupGrid"></div>
+        <div id="latestEmpty" class="empty">No updates yet. Once groups click a choice, their latest pick will show here.</div>
+      </section>
+
+      <section class="card">
+        <h2 class="sectionTitle">Live feed</h2>
+        <div id="feed" class="feed"></div>
+        <div id="feedEmpty" class="empty">Waiting for choices…</div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script>
+    const SOCKET_URL = "http://localhost:3000";
+
+    // UI elements
+    const statusLabel = document.getElementById("statusLabel");
+    const sessionCodeLabel = document.getElementById("sessionCodeLabel");
+    const eventCountEl = document.getElementById("eventCount");
+    const feed = document.getElementById("feed");
+    const feedEmpty = document.getElementById("feedEmpty");
+    const latestGrid = document.getElementById("latestGrid");
+    const latestEmpty = document.getElementById("latestEmpty");
+    const clearFeedBtn = document.getElementById("clearFeedBtn");
+    const rejoinBtn = document.getElementById("rejoinBtn");
+
+    // state
+    let sessionCode = prompt("Enter session code", "ABCD") || "ABCD";
+    let eventCount = 0;
+    const latestByGroup = {}; // { groupId: event }
+
+    sessionCodeLabel.textContent = sessionCode;
+
+    function fmtTime(ms){
+      return new Date(ms).toLocaleTimeString();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderLatest(){
+      const groups = Object.keys(latestByGroup).sort();
+      latestGrid.innerHTML = "";
+
+      if (groups.length === 0){
+        latestEmpty.style.display = "block";
+        return;
+      }
+      latestEmpty.style.display = "none";
+
+      groups.forEach(g => {
+        const ev = latestByGroup[g];
+        const div = document.createElement("div");
+        div.className = "groupCard";
+
+        div.innerHTML = `
+          <div class="groupHead">
+            <div class="groupName">${escapeHtml(g)}</div>
+            <div class="time">${fmtTime(ev.at)}</div>
+          </div>
+          <div class="kv">
+            <div class="pill"><span>Picked</span> <strong>${escapeHtml(ev.choiceText)}</strong></div>
+            <div class="pill"><span>From</span> <strong>${escapeHtml(ev.nodeId)}</strong></div>
+            <div class="pill"><span>To</span> <strong>${escapeHtml(ev.nextNodeId)}</strong></div>
+          </div>
+        `;
+        latestGrid.appendChild(div);
+      });
+    }
+
+    function addFeedItem(ev){
+      feedEmpty.style.display = "none";
+
+      const item = document.createElement("div");
+      item.className = "feedItem";
+
+      item.innerHTML = `
+        <div class="feedTop">
+          <div class="badge">${escapeHtml(ev.groupId)}</div>
+          <div class="time">${fmtTime(ev.at)}</div>
+        </div>
+        <div>
+          Picked: <code>${escapeHtml(ev.choiceText)}</code>
+        </div>
+      `;
+
+      feed.prepend(item);
+    }
+
+    function updateEventCount(){
+      eventCountEl.textContent = String(eventCount);
+    }
+
+    // connect
+    statusLabel.textContent = "Connecting…";
+    const socket = io(SOCKET_URL);
+
+    socket.on("connect", () => {
+      statusLabel.textContent = "Connected";
+      socket.emit("join_session", { sessionCode, role: "dashboard" });
+    });
+
+    socket.on("disconnect", () => {
+      statusLabel.textContent = "Disconnected";
+    });
+
+    socket.on("connect_error", (err) => {
+      statusLabel.textContent = "Connection error";
+      console.error(err);
+    });
+
+    socket.on("choice_update", (ev) => {
+      eventCount++;
+      updateEventCount();
+
+      latestByGroup[ev.groupId] = ev;
+      renderLatest();
+      addFeedItem(ev);
+    });
+
+    clearFeedBtn.addEventListener("click", () => {
+      feed.innerHTML = "";
+      eventCount = 0;
+      updateEventCount();
+      feedEmpty.style.display = "block";
+    });
+
+    rejoinBtn.addEventListener("click", () => {
+      const newCode = prompt("Enter session code (ex: ABCD):", sessionCode) || sessionCode;
+      sessionCode = newCode;
+      sessionCodeLabel.textContent = sessionCode;
+
+      // reset UI state
+      eventCount = 0;
+      updateEventCount();
+      feed.innerHTML = "";
+      feedEmpty.style.display = "block";
+      for (const k of Object.keys(latestByGroup)) delete latestByGroup[k];
+      renderLatest();
+
+      socket.emit("join_session", { sessionCode, role: "dashboard" });
+    });
+
+    // initial render
+    renderLatest();
+    updateEventCount();
+  </script>
+</body>
+</html>
