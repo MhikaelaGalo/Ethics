@@ -402,7 +402,7 @@
     });
 
     rejoinBtn.addEventListener("click", () => {
-      const newCode = prompt("Enter session code (ex: ABCD):", sessionCode) || sessionCode;
+      const newCode = prompt("Enter session code:", sessionCode) || sessionCode;
       sessionCode = newCode;
       sessionCodeLabel.textContent = sessionCode;
 
